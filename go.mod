@@ -1,3 +1,3 @@
-module github.com/OsipyanG/terminal-app
+module github.com/OsipyanG/MiniShell
 
 go 1.22
