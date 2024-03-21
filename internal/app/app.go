@@ -3,11 +3,14 @@ package app
 import (
 	"bufio"
 	"fmt"
-	"github.com/OsipyanG/MiniShell/internal/command"
-	"github.com/OsipyanG/MiniShell/internal/process"
 	"os"
 	"os/signal"
+	"os/user"
+	"path/filepath"
 	"syscall"
+
+	"github.com/OsipyanG/MiniShell/internal/command"
+	"github.com/OsipyanG/MiniShell/internal/process"
 )
 
 func Run() {
@@ -26,7 +29,8 @@ func Run() {
 
 	// Цикл чтения и выполнения команд
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("$ ")
+	prompt := getPrompt()
+	fmt.Print(prompt)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "exit" {
@@ -36,7 +40,8 @@ func Run() {
 			continue
 		}
 		command.ExecuteCommand(line, processManager)
-		fmt.Print("$ ")
+		prompt = getPrompt()
+		fmt.Print(prompt)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -45,4 +50,30 @@ func Run() {
 
 	// Завершаем все процессы перед выходом
 	processManager.KillAllProcesses()
+}
+
+func getPrompt() string {
+	currentUser, err := user.Current()
+	if err != nil {
+		fmt.Println("Failed to get current user:", err)
+		os.Exit(1)
+	}
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		fmt.Println("Failed to get hostname:", err)
+		os.Exit(1)
+	}
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Failed to get current working directory:", err)
+		os.Exit(1)
+	}
+
+	cwd = filepath.Base(cwd) // Отображаем только имя текущей директории
+
+	// Строка приглашения: [username@hostname cwd]$
+	prompt := fmt.Sprintf("[\033[34m%s\033[0m@\033[32m%s \033[36m%s\033[0m]$ ", currentUser.Username, hostname, cwd)
+	return prompt
 }
