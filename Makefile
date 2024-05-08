@@ -33,7 +33,7 @@ lint:
 .PHONY: install
 install: build
 	@echo "Installing $(BINARY_NAME) to $(INSTALL_DIR)"
-	@cp $(BINARY_PATH)/$(BINARY_NAME) $(INSTALL_DIR)/$(BINARY_NAME)
+	@sudo cp $(BINARY_PATH)/$(BINARY_NAME) $(INSTALL_DIR)/$(BINARY_NAME)
 	@echo "$(BINARY_NAME) installed successfully"
 
 .PHONY: uninstall
