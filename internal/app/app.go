@@ -23,8 +23,8 @@ func Run() {
 	go func() {
 		<-signals
 		fmt.Println("\nReceived an interrupt, stopping processes...")
-		processManager.KillAllProcesses()
-		os.Exit(0)
+		// 	processManager.KillAllProcesses()
+		// 	os.Exit(0)
 	}()
 
 	// Цикл чтения и выполнения команд
@@ -49,7 +49,7 @@ func Run() {
 	}
 
 	// Завершаем все процессы перед выходом
-	processManager.KillAllProcesses()
+	// processManager.KillAllProcesses()
 }
 
 func getPrompt() string {
