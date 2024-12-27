@@ -15,20 +15,14 @@ func New() *Manager {
 	return &Manager{}
 }
 
-// AddProcess добавляет процесс в менеджер и запускает его асинхронно
 func (pm *Manager) AddProcess(cmd *exec.Cmd) {
 	pm.mutex.Lock()
 	defer pm.mutex.Unlock()
 
 	pm.processes = append(pm.processes, cmd)
-	// Запуск процесса асинхронно
-	// go func() {
 	if err := cmd.Start(); err != nil {
 		fmt.Printf("Error running command: %s\n", err)
 	}
-	// Удалить процесс из списка после его завершения
-	pm.RemoveProcess(cmd)
-	// }()
 }
 
 func (pm *Manager) RemoveProcess(cmd *exec.Cmd) {
@@ -37,31 +31,26 @@ func (pm *Manager) RemoveProcess(cmd *exec.Cmd) {
 
 	for i, process := range pm.processes {
 		if process == cmd {
-			// Удаляем процесс из списка, не нарушая порядок остальных элементов
 			pm.processes = append(pm.processes[:i], pm.processes[i+1:]...)
+
 			break
 		}
 	}
 }
 
-// KillAllProcesses завершает все запущенные процессы
-// func (pm *Manager) KillAllProcesses() {
-// 	pm.mutex.Lock()
-// 	defer pm.mutex.Unlock()
+func (pm *Manager) KillAllProcesses() {
+	pm.mutex.Lock()
+	defer pm.mutex.Unlock()
 
-// 	for _, v := range pm.processes {
-// 		cmd := v
-// 		if cmd.Process != nil {
-// 			// Принудительное завершение процесса
-// 			err := cmd.Process.Kill()
-// 			if err != nil {
-// 				// Обработка возможной ошибки при попытке завершить процесс
-// 				fmt.Printf("Failed to kill process: %s\n", err)
-// 			} else {
-// 				fmt.Printf("Process killed: %d\n", cmd.Process.Pid)
-// 			}
-// 		}
-// 	}
-// 	// Очистка списка процессов после их завершения
-// 	pm.processes = []*exec.Cmd{}
-// }
+	for _, v := range pm.processes {
+		cmd := v
+		if cmd.Process != nil {
+			err := cmd.Process.Kill()
+			if err != nil {
+				fmt.Printf("Failed to kill process: %s\n", err)
+			} else {
+				fmt.Printf("Process killed: %d\n", cmd.Process.Pid)
+			}
+		}
+	}
+}

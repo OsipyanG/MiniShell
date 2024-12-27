@@ -14,27 +14,24 @@ import (
 )
 
 func Run() {
-	// Инициализация менеджера процессов
 	processManager := process.New()
+	// defer processManager.KillAllProcesses()
 
-	// Настройка обработчика сигналов для корректного завершения процессов
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-signals
 		fmt.Println("\nReceived an interrupt, stopping processes...")
-		// 	processManager.KillAllProcesses()
-		// 	os.Exit(0)
+		// processManager.KillAllProcesses()
+		os.Exit(0)
 	}()
 
-	// Цикл чтения и выполнения команд
 	scanner := bufio.NewScanner(os.Stdin)
 	prompt := getPrompt()
 	fmt.Print(prompt)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "exit" {
-			fmt.Println("Exiting...")
 			break
 		} else if line == "" {
 			continue
@@ -47,9 +44,6 @@ func Run() {
 	if err := scanner.Err(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Error reading from stdin:", err)
 	}
-
-	// Завершаем все процессы перед выходом
-	// processManager.KillAllProcesses()
 }
 
 func getPrompt() string {
@@ -71,9 +65,10 @@ func getPrompt() string {
 		os.Exit(1)
 	}
 
-	cwd = filepath.Base(cwd) // Отображаем только имя текущей директории
+	cwd = filepath.Base(cwd)
 
-	// Строка приглашения: [username@hostname cwd]$
+	// [username@hostname cwd]$
 	prompt := fmt.Sprintf("[\033[34m%s\033[0m@\033[32m%s \033[36m%s\033[0m]$ ", currentUser.Username, hostname, cwd)
+
 	return prompt
 }

@@ -30,18 +30,6 @@ lint:
 	@echo "Linting..."
 	golangci-lint run
 
-.PHONY: install
-install: build
-	@echo "Installing $(BINARY_NAME) to $(INSTALL_DIR)"
-	@sudo cp $(BINARY_PATH)/$(BINARY_NAME) $(INSTALL_DIR)/$(BINARY_NAME)
-	@echo "$(BINARY_NAME) installed successfully"
-
-.PHONY: uninstall
-uninstall:
-	@echo "Uninstalling $(BINARY_NAME) from $(INSTALL_DIR)"
-	@rm -f $(INSTALL_DIR)/$(BINARY_NAME)
-	@echo "$(BINARY_NAME) uninstalled successfully"
-
 .PHONY: clean
 clean:
 	@echo "Cleaning..."
